@@ -4,10 +4,14 @@ from groq import Groq
 import spacy
 from textblob import TextBlob
 
+# ============================================================
+# ⚠️ CRITICAL: set_page_config MUST be the first Streamlit command
+# ============================================================
+st.set_page_config(page_title="Groq NLP Agent", page_icon="🧠")
 
-# -------------------------------------------------------------------
+# ============================================================
 # 1. Load API Key – use st.secrets on Cloud, fallback to .env locally
-# -------------------------------------------------------------------
+# ============================================================
 try:
     # For Streamlit Cloud deployment
     api_key = st.secrets["GROQ_API_KEY"]
@@ -19,25 +23,24 @@ except Exception:
 
 client = Groq(api_key=api_key)
 
-# -------------------------------------------------------------------
+# ============================================================
 # 2. Load spaCy model with caching (essential for cloud performance)
-# -------------------------------------------------------------------
+# ============================================================
 @st.cache_resource
 def load_spacy_model():
     return spacy.load("en_core_web_sm")
 
 nlp = load_spacy_model()
 
-# -------------------------------------------------------------------
-# 3. Page config & title
-# -------------------------------------------------------------------
-st.set_page_config(page_title="Groq NLP Agent", page_icon="🧠")
+# ============================================================
+# 3. Page title & caption (now safe to call after set_page_config)
+# ============================================================
 st.title("🧠 Groq NLP‑Enhanced Agent")
 st.caption("Understands sentiment, entities, and intent before responding")
 
-# -------------------------------------------------------------------
-# 4. NLP helper functions (unchanged)
-# -------------------------------------------------------------------
+# ============================================================
+# 4. NLP helper functions
+# ============================================================
 def analyze_sentiment(text):
     blob = TextBlob(text)
     polarity = blob.sentiment.polarity
@@ -78,9 +81,9 @@ def clean_messages_for_api(messages):
         })
     return cleaned
 
-# -------------------------------------------------------------------
+# ============================================================
 # 5. Session state & chat history
-# -------------------------------------------------------------------
+# ============================================================
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -91,9 +94,9 @@ for msg in st.session_state.messages:
             with st.expander("🔍 NLP Insights (what the agent understood)"):
                 st.json(msg["nlp_insights"])
 
-# -------------------------------------------------------------------
+# ============================================================
 # 6. Chat input and response generation
-# -------------------------------------------------------------------
+# ============================================================
 if prompt := st.chat_input("What would you like to know?"):
     # Add user message
     st.session_state.messages.append({"role": "user", "content": prompt})
