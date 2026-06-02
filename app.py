@@ -4,15 +4,6 @@ from groq import Groq
 import spacy
 from textblob import TextBlob
 
-import subprocess
-import sys
-
-# Download spaCy model if not already present
-try:
-    nlp = spacy.load("en_core_web_sm")
-except OSError:
-    subprocess.run([sys.executable, "-m", "spacy", "download", "en_core_web_sm"])
-    nlp = spacy.load("en_core_web_sm")
 
 # -------------------------------------------------------------------
 # 1. Load API Key – use st.secrets on Cloud, fallback to .env locally
